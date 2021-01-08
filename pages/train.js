@@ -1,8 +1,9 @@
-import { useState, useRef, useReducer, useEffect } from "react";
-import * as mobilenet from "@tensorflow-models/mobilenet";
 import * as knnClassifier from "@tensorflow-models/knn-classifier";
+import * as mobilenet from "@tensorflow-models/mobilenet";
 import * as tf from "@tensorflow/tfjs";
-import "./App.css";
+import Head from "next/head";
+import { useEffect, useReducer, useRef, useState } from "react";
+import styles from "../styles/Home.module.css";
 
 const machine = {
   initial: "loadingModel",
@@ -100,6 +101,27 @@ function Train() {
       ])
     );
     localStorage.setItem("myData", modelAsString);
+
+    alert("Saved");
+  };
+
+  const exportModel = () => {
+    const modelAsString = JSON.stringify(
+      Object.entries(knn.getClassifierDataset()).map(([label, data]) => [
+        label,
+        Array.from(data.dataSync()),
+        data.shape,
+      ])
+    );
+
+    const link = document.createElement("a");
+    link.href = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(modelAsString)
+    )}`;
+    link.download = "model.json";
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
   };
 
   const actionButton = {
@@ -108,11 +130,15 @@ function Train() {
   };
 
   return (
-    <>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div>
-          <h2>DOGS</h2>
+    <div className={styles.container}>
+      <Head>
+        <title>Model trainer</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
+      <main className={styles.main}>
+        <h1 className={styles.title}>Train</h1>
+        <div className={styles.grid}>
           <input
             type="file"
             accept="image/*"
@@ -123,13 +149,12 @@ function Train() {
           />
 
           <button
+            className={styles.card}
             onClick={() => actionButton[appState].action(1) || (() => {})}
           >
-            {actionButton[appState].text}
+            <h3>Dog Images &uarr;</h3>
+            <p>Upload an image of a dog to help us determine what a dog is!</p>
           </button>
-        </div>
-        <div>
-          <h2>CATS</h2>
 
           <input
             type="file"
@@ -141,15 +166,40 @@ function Train() {
           />
 
           <button
+            className={styles.card}
             onClick={() => actionButton[appState].action(2) || (() => {})}
           >
-            {actionButton[appState].text}
+            <h3>Cat Images &uarr;</h3>
+            <p>Upload an image of a cat to help us determine what a cat is!</p>
+          </button>
+
+          <button className={styles.card} onClick={saveModel}>
+            <h3>Save &darr;</h3>
+            <p>Save this model so it can be used on the classify page.</p>
+          </button>
+
+          <button className={styles.card} onClick={exportModel}>
+            <h3>Export &darr;</h3>
+            <p>Save this model to your file system.</p>
           </button>
         </div>
-      </div>
-
-      <button onClick={saveModel}>Save</button>
-    </>
+      </main>
+      <footer className={styles.footer}>
+        <a href="/">Home</a>
+        &nbsp;|&nbsp;
+        <a href="/train">Train</a>
+        &nbsp;|&nbsp;
+        <a href="/classify">Classify</a>
+        &nbsp;|&nbsp;
+        <a
+          href="https://www.tensorflow.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Powered by TensorFlow
+        </a>
+      </footer>
+    </div>
   );
 }
 
