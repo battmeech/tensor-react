@@ -79,7 +79,6 @@ function Classify() {
         <input
           type="file"
           accept="image/*"
-          capture="camera"
           onChange={handleUpload}
           ref={inputRef}
         />
