@@ -55,11 +55,13 @@ function Classify() {
           setClassification(result);
         });
 
-        knn
-          .predictClass(model.infer(image, "conv_preds"), 10)
-          .then((result) => {
-            setResult(result);
-          });
+        if (knn.getNumClasses() !== 0) {
+          knn
+            .predictClass(model.infer(image, "conv_preds"), 10)
+            .then((result) => {
+              setResult(result);
+            });
+        }
       };
     }
   };
@@ -97,7 +99,7 @@ function Classify() {
 
           <div className={styles.card}>
             <h3>Classification</h3>
-            {result ? (
+            {classification ? (
               <p>
                 Most likely a {classification[0].className} - Confidence{" "}
                 {classification[0].probability * 100}%
@@ -106,11 +108,7 @@ function Classify() {
               <p>No results, please upload an image</p>
             )}
           </div>
-          <button
-            disabled={knn?.getClassExampleCount() === 0}
-            onClick={upload}
-            className={styles.card}
-          >
+          <button onClick={upload} className={styles.card}>
             <h3>Upload &uarr;</h3>
             <p>Upload an image to allow us to classify it.</p>
           </button>
