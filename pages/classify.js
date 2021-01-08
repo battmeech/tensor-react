@@ -85,17 +85,27 @@ function Classify() {
         />
 
         <div className={styles.grid}>
-          <div className={styles.card}>
-            <h3>Nearest Neighbour</h3>
-            {result ? (
+          {knn?.getNumClasses() === 0 ? (
+            <a href="/train" className={styles.card}>
+              <h3>Nearest Neighbour</h3>
               <p>
-                {result.label} - Confidence{" "}
-                {result.confidences[result.label] * 100}%
+                Currently the model is untrained for nearest neighbour, go to
+                the training page to fix this.
               </p>
-            ) : (
-              <p>No results, please upload an image</p>
-            )}
-          </div>
+            </a>
+          ) : (
+            <div className={styles.card}>
+              <h3>Nearest Neighbour</h3>
+              {result ? (
+                <p>
+                  {result.label} - Confidence{" "}
+                  {result.confidences[result.label] * 100}%
+                </p>
+              ) : (
+                <p>No results, please upload an image</p>
+              )}
+            </div>
+          )}
 
           <div className={styles.card}>
             <h3>Classification</h3>
